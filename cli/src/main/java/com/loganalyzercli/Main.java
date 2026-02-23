@@ -26,6 +26,11 @@ public class Main {
 				break;
 			}
 
+			if (line.equalsIgnoreCase("help")) {
+				cmd.usage(System.out);
+				break;
+			}
+
 			String[] tokens = line.split("\\s+");
 			cmd.execute(tokens);
 
