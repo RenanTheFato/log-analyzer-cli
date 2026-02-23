@@ -2,7 +2,6 @@ package com.loganalyzercli;
 
 import java.util.Scanner;
 
-import com.loganalyzercli.commands.HelloCommand;
 import com.loganalyzercli.commands.RootCommand;
 
 import picocli.CommandLine;
@@ -12,9 +11,11 @@ public class Main {
 
 		Scanner scanner = new Scanner(System.in);
 
-		CommandLine cmd = new CommandLine(new RootCommand()).addSubcommand("hello", new HelloCommand());
+		CommandLine cmd = new CommandLine(new RootCommand());
 
 		while (true) {
+			System.out.print("\n");
+			System.out.print("loganalyzer@0.0.1>");
 			String line = scanner.nextLine().trim();
 
 			if (line.isEmpty()) {
