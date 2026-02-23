@@ -7,6 +7,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -24,6 +25,9 @@ public class LogCommand implements Callable<Integer> {
 
   @Option(names = {"-wl", "--wordlist"}, paramLabel = "LIST", split = ",", description = "Keywords to filter rows. Can be entered multiple times.")
   private List<String> wordList;
+
+  @Option(names = {"-af", "--after"}, paramLabel = "DATE", description = "Filters log content from specific date")
+  private Date date;
 
   @Override
   public Integer call() throws Exception {
