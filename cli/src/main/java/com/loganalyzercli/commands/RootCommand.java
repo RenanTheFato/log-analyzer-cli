@@ -6,6 +6,10 @@ import picocli.CommandLine.Command;
 @Command(
   name = "LogAnalyzer",
   subcommandsRepeatable = true,
+  subcommands = {
+    LogCommand.class,
+    HelloCommand.class
+  },
   synopsisHeading = "",
   commandListHeading = "Commands Available: %n",
   optionListHeading = "Options: %n"

@@ -2,7 +2,7 @@ package com.loganalyzercli.commands;
 
 import picocli.CommandLine.Command;
 
-@Command
+@Command(name = "hello")
 public class HelloCommand implements Runnable {
 
   @Override
