@@ -31,6 +31,21 @@ public class Main {
 				break;
 			}
 
+			if (line.equalsIgnoreCase("clear") || line.equalsIgnoreCase("cls")) {
+				try {
+					new ProcessBuilder(System.getProperty("os.name").contains("Windows")
+							? new String[] { "cmd", "/c", "cls" }
+							: new String[] { "clear" })
+							.inheritIO()
+							.start()
+							.waitFor();
+				} catch (Exception e) {
+					System.out.print("\033[H\033[2J");
+					System.out.flush();
+				}
+				continue;
+			}
+
 			String[] tokens = line.split("\\s+");
 			cmd.execute(tokens);
 
