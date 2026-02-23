@@ -28,7 +28,7 @@ public class Main {
 
 			if (line.equalsIgnoreCase("help")) {
 				cmd.usage(System.out);
-				break;
+				continue;
 			}
 
 			if (line.equalsIgnoreCase("clear") || line.equalsIgnoreCase("cls")) {
