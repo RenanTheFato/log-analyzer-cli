@@ -116,10 +116,6 @@ public class LogCommand implements Callable<Integer> {
       return 0;
     }
 
-    System.out.println("\n─────────────────────── Level Filter: " + level + "─────────────────────");
-    System.out.println("Matched lines: " + filteredLines.size() + " of " + lineCount);
-    System.out.println("────────────────────────────────────────────────────────────────");
-
     filteredLines.forEach(System.out::println);
 
     try {
