@@ -82,6 +82,7 @@ public class LogCommand implements Callable<Integer> {
 
     List<String> filteredLines = lines.stream().filter(line -> {
       boolean matchesLevel = level == null || line.toUpperCase().contains(level.toUpperCase());
+      boolean matchesWordList = wordList == null || wordList.stream().anyMatch(word -> line.toLowerCase().contains(word.toLowerCase()));
       boolean matchesDate = true;
 
       if (dateOptions != null) {
@@ -106,7 +107,7 @@ public class LogCommand implements Callable<Integer> {
           matchesDate = true;
         }
       }
-      return matchesLevel && matchesDate;
+      return matchesLevel && matchesDate && matchesWordList;
     }).toList();
 
     
