@@ -6,10 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -30,15 +30,15 @@ public class LogCommand implements Callable<Integer> {
 
   @Option(names = { "-wl", "--wordlist" }, paramLabel = "LIST", split = ",", description = "Keywords to filter rows. Can be entered multiple times.")
   private List<String> wordList;
-  
+
   static class DateOptions {
     @Option(names = { "-af", "--after" }, paramLabel = "DATE", description = "Filters log content from specific date", required = true)
-    private Date date;
-    
-    @Option(names = {"-df", "--dateformat"}, paramLabel = "FORMAT", description = "Date format in the log file. Ex: dd-MM-yyyy HH:mm:ss", required = true)
+    private String date;
+
+    @Option(names = { "-df", "--dateformat" }, paramLabel = "FORMAT", description = "Date format in the log file. Ex: dd-MM-yyyy HH:mm:ss", required = true)
     private String dateFormat;
   }
-  
+
   @ArgGroup(exclusive = false)
   DateOptions dateOptions;
 
@@ -56,11 +56,6 @@ public class LogCommand implements Callable<Integer> {
       return 1;
     }
 
-    if (dateOptions.date != null && dateOptions.dateFormat == null) {
-      System.err.println("--dateformat is required when --after is provided");
-      return 1;
-    }
-
     System.out.println("Analyzing: " + file.getName());
 
     Path path = file.toPath();
@@ -75,30 +70,58 @@ public class LogCommand implements Callable<Integer> {
 
     new LogPropsTable(file, lineCount, charCount, formattedDate, level, wordList).show();
 
-    if (level != null) {
-      List<String> filteredLines = lines.stream().filter(line -> line.toUpperCase().contains(level.toUpperCase())).toList();
-      System.out.println("\n─────────────────────── Level Filter: " + level + " ─────────────────────");
-      System.out.println("Matched lines: " + filteredLines.size() + " of " + lineCount);
-      System.out.println("────────────────────────────────────────────────────────────────");
+    List<String> filteredLines = lines.stream().filter(line -> {
+      boolean matchesLevel = level == null || line.toUpperCase().contains(level.toUpperCase());
+      boolean matchesDate = true;
 
-      if (filteredLines.isEmpty()) {
-        System.out.println("No lines matched the level: " + level);
+      if (dateOptions != null) {
+        try {
+          DateTimeFormatter logDateFormat = DateTimeFormatter.ofPattern(dateOptions.dateFormat);
+          LocalDate after = LocalDate.parse(dateOptions.date, logDateFormat);
+          int dateLenght = dateOptions.dateFormat.length();
+          boolean found = false;
+          for (int i = 0; i < line.length() - dateLenght; i++) {
+            try {
+              String candidate = line.substring(i, i + dateLenght);
+              LocalDate lineDate = LocalDate.parse(candidate, logDateFormat);
+              matchesDate = !lineDate.isBefore(after);
+              found = true;
+              break;
+            } catch (Exception e) {}
+          }
+          if (!found) {
+            matchesDate = true;
+          }
+        } catch (Exception exception) {
+          matchesDate = true;
+        }
       }
+      return matchesLevel && matchesDate;
+    }).toList();
 
-      try {
-        Path outputDir = Paths.get(outputPath);
-        Files.createDirectories(outputDir);
-        String localDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss"));
+    
+    if (filteredLines.isEmpty()) {
+      System.out.println("No lines matched the level: " + level);
+      return 0;
+    }
 
-        Path logAnalyzed = outputDir.resolve(String.format("log-analyzed%s.txt", localDateTime));
-        Files.write(logAnalyzed, String.join("\n",filteredLines).getBytes(StandardCharsets.UTF_8));
-        System.out.println("Text file with log analyzed created at: " + logAnalyzed.toAbsolutePath());
-      } catch (Exception exception) {
-        System.err.println(exception.getMessage());
-        exception.printStackTrace();
-      }
+    System.out.println("\n─────────────────────── Level Filter: " + level + "─────────────────────");
+    System.out.println("Matched lines: " + filteredLines.size() + " of " + lineCount);
+    System.out.println("────────────────────────────────────────────────────────────────");
 
-      filteredLines.forEach(System.out::println);
+    filteredLines.forEach(System.out::println);
+
+    try {
+      Path outputDir = Paths.get(outputPath);
+      Files.createDirectories(outputDir);
+      String localDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss"));
+
+      Path logAnalyzed = outputDir.resolve(String.format("log-analyzed%s.txt", localDateTime));
+      Files.write(logAnalyzed, String.join("\n", filteredLines).getBytes(StandardCharsets.UTF_8));
+      System.out.println("Text file with log analyzed created at: " + logAnalyzed.toAbsolutePath());
+    } catch (Exception exception) {
+      System.err.println(exception.getMessage());
+      exception.printStackTrace();
     }
 
     return 0;
