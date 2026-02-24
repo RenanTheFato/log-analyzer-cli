@@ -83,7 +83,7 @@ public class LogCommand implements Callable<Integer> {
         String localDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss"));
 
         Path logAnalyzed = outputDir.resolve(String.format("log-analyzed%s.txt", localDateTime));
-        Files.write(logAnalyzed, filteredLines.toString().getBytes(StandardCharsets.UTF_8));
+        Files.write(logAnalyzed, String.join("\n",filteredLines).getBytes(StandardCharsets.UTF_8));
         System.out.println("Text file with log analyzed created at: " + logAnalyzed.toAbsolutePath());
       } catch (Exception exception) {
         System.err.println(exception.getMessage());
