@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import com.loganalyzercli.utils.LogPropsTable;
+
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -57,15 +59,7 @@ public class LogCommand implements Callable<Integer> {
     LocalDateTime lastModified = attrs.lastModifiedTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     String formattedDate = lastModified.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
 
-    System.out.println("┌─────────────────────┬──────────────────────────────┐");
-    System.out.printf("│ %-19s │ %-28s │%n", "File", file.getName());
-    System.out.println("├─────────────────────┼──────────────────────────────┤");
-    System.out.printf("│ %-19s │ %-28d │%n", "Lines", lineCount);
-    System.out.printf("│ %-19s │ %-28d │%n", "Characters", charCount);
-    System.out.printf("│ %-19s │ %-28s │%n", "Last Modified", formattedDate);
-    System.out.printf("│ %-19s │ %-28s │%n", "Log Level", level);
-    System.out.printf("│ %-19s │ %-28s │%n", "Word List", wordList);
-    System.out.println("└─────────────────────┴──────────────────────────────┘");
+    new LogPropsTable(file, lineCount, charCount, formattedDate, level, wordList).show();
 
     if (level != null) {
       List<String> filteredLines = lines.stream().filter(line -> line.toUpperCase().contains(level.toUpperCase())).toList();
