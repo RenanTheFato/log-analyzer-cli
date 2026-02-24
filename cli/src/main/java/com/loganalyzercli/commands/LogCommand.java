@@ -56,6 +56,16 @@ public class LogCommand implements Callable<Integer> {
       return 1;
     }
 
+    if (dateOptions != null) {
+      try {
+        DateTimeFormatter logDateValidate = DateTimeFormatter.ofPattern(dateOptions.dateFormat);
+        LocalDate.parse(dateOptions.date, logDateValidate);
+      } catch (Exception e) {
+        System.err.printf("Error: date '%s' does not match format '%s'", dateOptions.date, dateOptions.dateFormat);
+        return 1;
+      }
+    }
+
     System.out.println("Analyzing: " + file.getName());
 
     Path path = file.toPath();
