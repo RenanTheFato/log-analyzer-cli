@@ -65,16 +65,16 @@ log -f path/to/file.log
 log -f path/to/file.log -l ERROR
 
 # Filter by keyword
-log -f path/to/file.log -wl "null pointer"
+log -f path/to/file.log -wl null
 
 # Filter by multiple keywords
-log -f path/to/file.log -wl "timeout,connection refused"
+log -f path/to/file.log -wl timeout,connection,refused
 
 # Filter by date (requires both -af and -df)
-log -f path/to/file.log -af 22/02/2025 -df dd/MM/yyyy
+log -f path/to/file.log -af 31/12/1999 -df dd/MM/yyyy
 
 # Combine filters
-log -f path/to/file.log -l ERROR -wl "timeout" -af 22/02/2025 -df dd/MM/yyyy
+log -f path/to/file.log -l ERROR -wl timeout -af 31/12/1999 -df dd/MM/yyyy
 ```
 
 ### Available Options
