@@ -42,7 +42,7 @@ public class LogCommand implements Callable<Integer> {
   @ArgGroup(exclusive = false)
   DateOptions dateOptions;
 
-  private String outputPath = "cli/logs";
+  private String outputPath = "logs";
 
   @Override
   public Integer call() throws Exception {
