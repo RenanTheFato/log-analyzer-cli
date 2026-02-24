@@ -6,7 +6,7 @@
 
     <groupId>com.logcli</groupId>
     <artifactId>cli</artifactId>
-    <version>0.0.1-ALPHA</version>
+    <version>0.1.1-ALPHA</version>
 
     <properties>
         <java.version>25</java.version>

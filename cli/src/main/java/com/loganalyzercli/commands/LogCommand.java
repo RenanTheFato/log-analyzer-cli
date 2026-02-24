@@ -19,7 +19,7 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "log", mixinStandardHelpOptions = true, version = "ALPHA 0.0.1")
+@Command(name = "log", mixinStandardHelpOptions = true, version = "ALPHA 0.1.1")
 public class LogCommand implements Callable<Integer> {
 
   @Option(names = { "-f", "--file" }, paramLabel = "FILE", description = "Path to the log file to be analyzed.", required = true)
