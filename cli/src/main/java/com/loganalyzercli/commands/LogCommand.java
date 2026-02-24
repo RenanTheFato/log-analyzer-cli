@@ -15,6 +15,7 @@ import java.util.concurrent.Callable;
 
 import com.loganalyzercli.utils.LogPropsTable;
 
+import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -29,9 +30,17 @@ public class LogCommand implements Callable<Integer> {
 
   @Option(names = { "-wl", "--wordlist" }, paramLabel = "LIST", split = ",", description = "Keywords to filter rows. Can be entered multiple times.")
   private List<String> wordList;
-
-  @Option(names = { "-af", "--after" }, paramLabel = "DATE", description = "Filters log content from specific date")
-  private Date date;
+  
+  static class DateOptions {
+    @Option(names = { "-af", "--after" }, paramLabel = "DATE", description = "Filters log content from specific date", required = true)
+    private Date date;
+    
+    @Option(names = {"-df", "--dateformat"}, paramLabel = "FORMAT", description = "Date format in the log file. Ex: dd-MM-yyyy HH:mm:ss", required = true)
+    private String dateFormat;
+  }
+  
+  @ArgGroup(exclusive = false)
+  DateOptions dateOptions;
 
   private String outputPath = "cli/logs";
 
@@ -44,6 +53,11 @@ public class LogCommand implements Callable<Integer> {
 
     if (!file.isFile()) {
       System.err.println("Path isn't a file " + file.getAbsolutePath());
+      return 1;
+    }
+
+    if (dateOptions.date != null && dateOptions.dateFormat == null) {
+      System.err.println("--dateformat is required when --after is provided");
       return 1;
     }
 
